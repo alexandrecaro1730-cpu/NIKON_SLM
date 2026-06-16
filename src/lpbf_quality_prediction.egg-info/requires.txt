@@ -1,0 +1,17 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+joblib
+fastapi
+uvicorn
+pydantic
+typer
+
+[dev]
+pytest
+ruff
+black
+jupyter
+ipykernel

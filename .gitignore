@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Generated outputs
+reports/eda/
+reports/figures/
+reports/metrics/
+models/*.joblib
+models/*.pkl
+
+# Logs
+*.log
+
+# Optional: uncomment if the dataset is confidential
+#data/raw/*.csv

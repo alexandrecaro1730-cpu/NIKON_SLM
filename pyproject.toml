@@ -1,0 +1,26 @@
+[project]
+name = "lpbf-quality-prediction"
+version = "0.1.0"
+description = "Industrial LPBF titanium build quality prediction pipeline"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "joblib",
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "typer",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "jupyter",
+    "ipykernel",
+]
