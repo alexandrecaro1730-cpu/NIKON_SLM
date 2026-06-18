@@ -1,9 +1,10 @@
-# Python
+# Python cache / tooling
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.egg-info/
 
 # Virtual environments
 .venv/
@@ -15,15 +16,21 @@ env/
 .idea/
 .vscode/
 
-# Generated outputs
+# Generated EDA / modeling outputs
 reports/eda/
 reports/figures/
 reports/metrics/
-models/*.joblib
-models/*.pkl
+
+# Generated model artifacts
+models/**/*.joblib
+models/**/*.pkl
+
+# Optional generated slide renders
+rendered_task2/
+render_v4/
 
 # Logs
 *.log
 
 # Optional: uncomment if the dataset is confidential
-#data/raw/*.csv
+# data/raw/*.csv
