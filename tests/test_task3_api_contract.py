@@ -14,7 +14,20 @@ service contract required for Task 3:
 Coding objective
 ----------------
 Use FastAPI TestClient to test the API without starting a real server process.
+
+CI objective
+------------
+GitHub Actions starts from a clean repository checkout. Generated model
+artifacts are intentionally not committed to Git, so the tests that call
+/model-info and /predict must create the selected in-build model artifact when
+it is missing.
 """
+
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -23,6 +36,43 @@ from scripts.production_smoke_test import sample_inbuild_payload
 
 
 client = TestClient(app)
+
+
+def ensure_inbuild_model_artifact() -> None:
+    """
+    Ensure the selected Task 2 in-build model artifact exists.
+
+    Business objective
+    ------------------
+    The production API is expected to load a trained model artifact. Because
+    generated artifacts are reproducible and normally not committed, this
+    helper makes the API tests reproducible in fresh environments such as
+    GitHub Actions.
+
+    Coding objective
+    ----------------
+    Train the selected in-build Logistic Regression model only when the
+    expected artifact is missing.
+    """
+
+    model_path = Path("models/inbuild/logistic_regression.joblib")
+
+    if model_path.exists():
+        return
+
+    subprocess.run(
+        [
+            sys.executable,
+            "scripts/train.py",
+            "--input",
+            "data/raw/lpbf_titanium_dataset.csv",
+            "--scenario",
+            "inbuild",
+            "--model",
+            "logistic_regression",
+        ],
+        check=True,
+    )
 
 
 def test_health_endpoint_returns_service_status() -> None:
@@ -51,6 +101,8 @@ def test_root_endpoint_returns_navigation_links() -> None:
 
 
 def test_model_info_endpoint_exposes_inbuild_contract() -> None:
+    ensure_inbuild_model_artifact()
+
     response = client.get("/model-info")
 
     assert response.status_code == 200
@@ -74,6 +126,8 @@ def test_model_info_endpoint_exposes_inbuild_contract() -> None:
 
 
 def test_predict_endpoint_returns_operational_decision_response() -> None:
+    ensure_inbuild_model_artifact()
+
     response = client.post(
         "/predict",
         json=sample_inbuild_payload(),
