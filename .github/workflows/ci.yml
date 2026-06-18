@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test-and-smoke:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,12 +16,49 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Install project
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      - name: Check dataset exists
+        run: |
+          test -f data/raw/lpbf_titanium_dataset.csv
+
+      - name: Inspect feature sets
+        run: |
+          python scripts/inspect_feature_sets.py
+
       - name: Run tests
         run: |
           python -m pytest tests -q
+
+      - name: Train selected in-build MVP model
+        run: |
+          python scripts/train.py \
+            --input data/raw/lpbf_titanium_dataset.csv \
+            --scenario inbuild \
+            --model logistic_regression
+
+      - name: Run production smoke test
+        run: |
+          python scripts/production_smoke_test.py
+
+      - name: Verify API imports and routes
+        run: |
+          python - <<'PY'
+          from lpbf_quality.api.main import app
+
+          routes = {route.path for route in app.routes}
+
+          required_routes = {"/", "/health", "/model-info", "/predict", "/docs"}
+
+          missing = required_routes - routes
+
+          if missing:
+              raise SystemExit(f"Missing required API routes: {missing}")
+
+          print("API route check passed.")
+          PY
