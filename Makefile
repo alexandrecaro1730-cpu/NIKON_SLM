@@ -1,8 +1,7 @@
-.PHONY: install test smoke eda deep-eda \
+.PHONY: install test smoke production-smoke serve-api eda deep-eda \
 	train train-inbuild train-all-models train-boosting-inbuild \
-	evaluate-inbuild \
-	compare-models compare-inbuild \
-	modeling-report
+	evaluate-inbuild compare-models compare-inbuild \
+	modeling-report modeling-plots
 
 install:
 	pip install -e ".[dev]"
@@ -43,3 +42,11 @@ compare-inbuild:
 modeling-report:
 	python scripts/generate_modeling_report.py
 
+serve-api:
+	python scripts/serve_api.py
+
+production-smoke:
+	python scripts/production_smoke_test.py
+
+smoke:
+	python scripts/production_smoke_test.py
